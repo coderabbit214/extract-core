@@ -2,7 +2,6 @@ package data
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/coderabbit214/extract-core/dictionary"
 	"github.com/coderabbit214/extract-core/result"
 	"github.com/coderabbit214/extract-core/utils"
@@ -31,77 +30,46 @@ func NewData(str string) (ParserData, error) {
 }
 
 // GetUniqueIdsByField 根据filter筛查结果范围
-func (a *ParserData) GetUniqueIdsByField(filters []dictionary.Filter, rangeMap map[string][]utils.Range) ([]utils.Range, error) {
-	ran := make([]utils.Range, 0)
+func (a *ParserData) GetUniqueIdsByField(filters []dictionary.Filter, rangeMap map[string][]string) ([]string, error) {
+	var ranges []string
 	//数据过滤
-	for _, filter := range filters {
+	for i, filter := range filters {
 		if filter.Name != "" && rangeMap != nil {
-			ran = rangeMap[filter.Name]
+			ranges = rangeMap[filter.Name]
 			continue
 		}
-		ran = a.filter(filter, &ran)
+		if i == 0 {
+			ranges = a.filter(filter, nil)
+			continue
+		}
+		ranges = a.filter(filter, ranges)
 	}
-	return ran, nil
+	return ranges, nil
 }
 
 // 过滤
-func (a *ParserData) filter(filter dictionary.Filter, ran *[]utils.Range) []utils.Range {
-	//首次处理
-	if len(*ran) == 0 {
-		extract := a.getUniqueIDsTextExtract(nil, filter.Regular, filter.Type)
-		switch filter.Kind {
-		case dictionary.KindParent:
-			ranges := make([]utils.Range, len(extract))
-			for i, v := range extract {
-				uIds := a.findUniqueIdByParentUniqueIdFromLogics(v)
-				ranges[i] = utils.Range{UniqueIds: uIds}
-			}
-			ran = &ranges
-		case dictionary.KindUnder:
-			ranges := make([]utils.Range, len(extract))
-			for i, v := range extract {
-				uIds := a.findUniqueIdByUnderUniqueIdFromLogics(v)
-				ranges[i] = utils.Range{UniqueIds: uIds}
-			}
-			ran = &ranges
-		case dictionary.KindAbove:
-			ranges := make([]utils.Range, len(extract))
-			for i, v := range extract {
-				uIds := a.findUniqueIdByAboveUniqueIdFromLogics(v)
-				ranges[i] = utils.Range{UniqueIds: uIds}
-			}
-			ran = &ranges
+func (a *ParserData) filter(filter dictionary.Filter, ranges []string) []string {
+	extract := a.getUniqueIDsTextExtract(ranges, filter.Regular, filter.Type)
+	var uIds []string
+	switch filter.Kind {
+	case dictionary.KindParent:
+		for _, v := range extract {
+			uIds = a.findUniqueIdByParentUniqueIdFromLogics(v)
 		}
-		return *ran
-	}
-	for i, v := range *ran {
-		extract := a.getUniqueIDsTextExtract(v.UniqueIds, filter.Regular, filter.Type)
-		var uIds []string
-		switch filter.Kind {
-		case dictionary.KindParent:
-			ranges := make([]utils.Range, len(extract))
-			for k, r := range extract {
-				uIds = a.findUniqueIdByParentUniqueIdFromLogics(r)
-				ranges[k] = utils.Range{UniqueIds: uIds}
-			}
-		case dictionary.KindUnder:
-			ranges := make([]utils.Range, len(extract))
-			for k, r := range extract {
-				uIds = a.findUniqueIdByUnderUniqueIdFromLogics(r)
-				ranges[k] = utils.Range{UniqueIds: uIds}
-			}
-		case dictionary.KindAbove:
-			ranges := make([]utils.Range, len(extract))
-			for k, r := range extract {
-				uIds = a.findUniqueIdByAboveUniqueIdFromLogics(r)
-				ranges[k] = utils.Range{UniqueIds: uIds}
-			}
+	case dictionary.KindUnder:
+		for _, v := range extract {
+			uIds = a.findUniqueIdByUnderUniqueIdFromLogics(v)
 		}
-		v.UniqueIds = utils.IntersectionStrings(v.UniqueIds, uIds)
-		(*ran)[i] = v
-		fmt.Println(v.UniqueIds)
+	case dictionary.KindAbove:
+		for _, v := range extract {
+			uIds = a.findUniqueIdByAboveUniqueIdFromLogics(v)
+		}
 	}
-	return *ran
+	if ranges == nil {
+		return uIds
+	}
+	ranges = utils.IntersectionStrings(ranges, uIds)
+	return ranges
 }
 
 // getUniqueIDsTextExtract 普通筛选 非表格内部
