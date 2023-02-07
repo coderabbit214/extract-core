@@ -22,38 +22,40 @@ func NewExtract(dictionary dictionary.Dictionary, parserData data.ParserData, on
 		ParserData:   parserData,
 		OnExtractEnd: onExtractEnd,
 	}
-	extract.extract()
+	err := extract.extract()
+	if err != nil {
+		return nil, err
+	}
 	return extract, nil
 }
 
 // extract 提取
-func (m *Extract) extract() {
+func (m *Extract) extract() error {
 	res := make(map[string]result.Result)
+	rangeMap := make(map[string][]string)
+
 	fields := m.Dictionary.Fields
-	rangeMap := make(map[string][]utils.Range)
 	for _, field := range fields {
 		//过滤
 		filters := field.Filters
-		var uIds []string
 		if len(filters) > 0 {
-			uIds = make([]string, 0)
-			ranges, _ := m.ParserData.GetUniqueIdsByField(filters, rangeMap)
-			rangeMap[field.Name] = ranges
-			for _, ran := range ranges {
-				uIds = append(uIds, ran.UniqueIds...)
+			ranges, err := m.ParserData.GetUniqueIdsByField(filters, rangeMap)
+			if err != nil {
+				return err
 			}
+			rangeMap[field.Name] = ranges
 		}
 		//查找
 		var r result.Result
 		switch field.FieldType {
 		case dictionary.FieldTypeContext:
 			if field.Regular != "" {
-				r = m.ParserData.ContextExtract(uIds, field.Regular, field.Type)
+				r = m.ParserData.ContextExtract(rangeMap[field.Name], field.Regular, field.Type)
 			} else {
-				r, _ = m.ParserData.GetContextResultsByUIds(uIds, field.Type)
+				r, _ = m.ParserData.GetContextResultsByUIds(rangeMap[field.Name], field.Type)
 			}
 		case dictionary.FieldTypeCells:
-			r = m.ParserData.CellsExtract(uIds, field.CellsRegulars)
+			r = m.ParserData.CellsExtract(rangeMap[field.Name], field.CellsRegulars)
 		}
 		res[field.Name] = r
 	}
@@ -62,4 +64,5 @@ func (m *Extract) extract() {
 	if m.OnExtractEnd != nil {
 		m.OnExtractEnd(m.Result)
 	}
+	return nil
 }
