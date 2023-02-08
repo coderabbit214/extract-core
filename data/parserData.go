@@ -90,7 +90,7 @@ func (a *ParserData) getUniqueIDsTextExtract(ids []string, regular string, dataT
 func (a *ParserData) ContextExtract(ids []string, regular string, dataType string) result.Result {
 	reg := regexp.MustCompile(regular)
 	groupNames := reg.SubexpNames()
-	if len(groupNames) == 2 && groupNames[1] == "val" {
+	if len(groupNames) == 2 && groupNames[1] == utils.Val {
 		return a.ContentExtract(ids, regular, dataType, 1)
 	} else if len(groupNames) >= 2 {
 		return a.GroupExtract(ids, regular, dataType)
@@ -154,7 +154,7 @@ func (a *ParserData) CellsExtract(ids []string, regulars []dictionary.CellsRegul
 	}
 	contexts := make([]result.Context, 0)
 	for _, layout := range a.Layouts {
-		if layout.Type == "table" && (ids == nil || utils.InString(layout.UniqueID, ids)) {
+		if layout.Type == TypeTable && (ids == nil || utils.InString(layout.UniqueID, ids)) {
 			cellIds := layout.TableCellsRegular(regulars)
 			//过滤结果处理
 			if len(cellIds) > 0 {
@@ -224,7 +224,7 @@ func (a *ParserData) GetContextResultsByUIds(ids []string, t string) (result.Res
 	groups := make([]map[string]result.Context, 0)
 	for _, layout := range a.Layouts {
 		if (ids == nil || utils.InString(layout.UniqueID, ids)) && layout.Type == t {
-			if layout.Type == "table" {
+			if layout.Type == TypeTable {
 				g := layout.TableToResultGroup()
 				groups = append(groups, g...)
 			} else {

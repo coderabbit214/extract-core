@@ -41,6 +41,10 @@ type Layout struct {
 	ParserData *ParserData
 }
 
+const (
+	TypeTable = "table"
+)
+
 // TableCellsRegular 表格内部筛选
 func (l *Layout) TableCellsRegular(regulars []dictionary.CellsRegular) []int {
 	var xCellIds []int
