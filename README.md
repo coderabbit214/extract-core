@@ -117,7 +117,7 @@ fields:
   - `context`：段落中提取
   - `cells`：表格中提取单元格
 - `type`：提取数据类型，详情查看[阿里云文档智能](https://www.aliyun.com/product/ai/docmind)说明文档
-- `regular`：提取数据正则，在一段话中提取一个结果使用`(?P<val>)`，提取多个使用多个名称，两种返回数据结构不同，具体内容在下文介绍
+- `regular`：提取数据正则，在一段话中提取一个结果使用`(?P<val>)`，提取多个使用多个名称，两种返回数据结构不同
 - `filters`：数据过滤，多种过滤方式以及对应的`type`和`regular`
   - `parent`：在哪个标题下
   - `under`：上文
