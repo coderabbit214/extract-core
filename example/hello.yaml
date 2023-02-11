@@ -1,0 +1,6 @@
+name: extract-core
+fields:
+  - name: voting_result
+    type: text
+    field-type: context
+    regular: 表决.*(?P<val>通过|不通过|否决|弃权)

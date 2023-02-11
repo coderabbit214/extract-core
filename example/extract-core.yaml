@@ -1,0 +1,36 @@
+name: extract-core
+fields:
+  - name: text
+    type: text
+    field-type: context
+    regular: 表决.*(?P<val>通过|不通过|否决|弃权)
+    filters:
+      - kind: parent
+        type: title
+        regular: .*第三部分
+      - kind: above
+        type: text
+        regular: 第三段
+  - name: group
+    type: text
+    field-type: context
+    regular: (?P<name>.*)[:：](?P<email>[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?)
+    filters:
+      - kind: parent
+        type: title
+        regular: .*第一部分
+  - name: table
+    type: table
+    field-type: context
+    filters:
+      - kind: parent
+        type: title
+        regular: .*第二部分
+  - name: cells
+    type: table
+    field-type: cells
+    cells-regulars:
+      - kind: row
+        regular: CC
+      - kind: col
+        regular: 身高
