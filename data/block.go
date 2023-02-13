@@ -1,6 +1,8 @@
 package data
 
-import "github.com/coderabbit214/extract-core/utils"
+import (
+	"github.com/coderabbit214/extract-core/utils"
+)
 
 type Block struct {
 	Pos     []utils.Point `json:"pos"`

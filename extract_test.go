@@ -25,7 +25,7 @@ func TestNewExtract(t *testing.T) {
 		fmt.Println("yaml read err:", err.Error())
 		return
 	}
-	dic, err := dictionary.NewDictionary(string(yamlFile))
+	dic, err := dictionary.NewDictionaryByYaml(string(yamlFile))
 	if err != nil {
 		fmt.Println("NewDictionary err:", err.Error())
 		return

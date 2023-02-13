@@ -160,8 +160,7 @@ func (l *Layout) TableToResultGroup() []map[string]result.Context {
 		for _, head := range heads {
 			if cell.Xsc == head.Xsc && cell.Xec == head.Xec {
 				m[head.GetText()] = result.Context{
-					//TODO: Block
-					Blocks: nil,
+					Blocks: cell.GetBlocks(l.ParserData),
 					Text:   cell.GetText(),
 				}
 			}

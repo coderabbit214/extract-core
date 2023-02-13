@@ -161,9 +161,8 @@ func (a *ParserData) CellsExtract(ids []string, regulars []dictionary.CellsRegul
 				localCells := layout.GetCellsByIds(cellIds)
 				for _, cell := range localCells {
 					context := &result.Context{
-						Text: cell.GetText(),
-						//TODO: 补充blocks
-						Blocks: nil,
+						Text:   cell.GetText(),
+						Blocks: cell.GetBlocks(a),
 					}
 					contexts = append(contexts, *context)
 				}
