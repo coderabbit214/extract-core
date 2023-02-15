@@ -4,8 +4,8 @@ import "gopkg.in/yaml.v3"
 
 // Dictionary 提取字典
 type Dictionary struct {
-	Name   string  `yaml:"name"`
-	Fields []Field `yaml:"fields"`
+	Name   string  `yaml:"name" json:"name"`
+	Fields []Field `yaml:"fields" json:"fields"`
 }
 
 func NewDictionaryByYaml(str string) (Dictionary, error) {

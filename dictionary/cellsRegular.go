@@ -1,8 +1,8 @@
 package dictionary
 
 type CellsRegular struct {
-	Kind    string `yaml:"kind"`
-	Regular string `yaml:"regular"`
+	Kind    string `yaml:"kind" json:"kind"`
+	Regular string `yaml:"regular" json:"regular"`
 }
 
 const (
